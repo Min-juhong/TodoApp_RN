@@ -1,9 +1,18 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import DateHead from './components/DateHead';
 import AddTodo from './components/AddTodo';
 import Empty from './components/Empty';
 import TodoList from './components/TodoList';
+import todosStorage from './storages/todosStorage';
+
+{/*
+1. 한글입력시 TodoList에서 글자 높이가 맞지 않음 (영어는 맞는다)
+2. TodoList에 구분선이 표시되지 않음
+*/}
+
 
 function App() {
 const today = new Date();
@@ -17,6 +26,17 @@ const onInsert = text => {
   };
   setTodos(todos.concat(todo));
 };
+
+useEffect(() => {
+  todosStorage
+  .get()
+  .then(setTodos)
+  .catch(console.error)
+}, []);
+
+useEffect(() => {
+  todosStorage.set(todos).catch(console.error)
+}, [todos]);
 
 const onToggle = id => {
   const nextTodos = todos.map(todo =>
